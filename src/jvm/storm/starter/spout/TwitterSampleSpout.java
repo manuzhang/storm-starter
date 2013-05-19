@@ -1,4 +1,4 @@
-/*
+
 
 package storm.starter.spout;
 
@@ -15,6 +15,8 @@ import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
@@ -58,6 +60,10 @@ public class TwitterSampleSpout extends BaseRichSpout {
             @Override
             public void onException(Exception e) {
             }
+
+			@Override
+			public void onStallWarning(StallWarning warning) {				
+			}
             
         };
         TwitterStreamFactory fact = new TwitterStreamFactory(new ConfigurationBuilder().setUser(_username).setPassword(_pwd).build());
@@ -102,4 +108,3 @@ public class TwitterSampleSpout extends BaseRichSpout {
     }
     
 }
-*/

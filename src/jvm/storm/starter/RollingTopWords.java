@@ -3,6 +3,7 @@ package storm.starter;
 import storm.starter.bolt.IntermediateRankingsBolt;
 import storm.starter.bolt.RollingCountBolt;
 import storm.starter.bolt.TotalRankingsBolt;
+import storm.starter.spout.WeiboSpout;
 import storm.starter.util.StormRunner;
 import backtype.storm.Config;
 import backtype.storm.testing.TestWordSpout;
@@ -16,7 +17,7 @@ import backtype.storm.tuple.Fields;
  */
 public class RollingTopWords {
 
-    private static final int DEFAULT_RUNTIME_IN_SECONDS = 60;
+    private static final int DEFAULT_RUNTIME_IN_SECONDS = 3600;
     private static final int TOP_N = 5;
 
     private final TopologyBuilder builder;
@@ -40,12 +41,12 @@ public class RollingTopWords {
     }
 
     private void wireTopology() throws InterruptedException {
-        String spoutId = "wordGenerator";
+        String spoutId = "weibo";
         String counterId = "counter";
         String intermediateRankerId = "intermediateRanker";
         String totalRankerId = "finalRanker";
-        builder.setSpout(spoutId, new TestWordSpout(), 5);
-        builder.setBolt(counterId, new RollingCountBolt(9, 3), 4).fieldsGrouping(spoutId, new Fields("word"));
+        builder.setSpout(spoutId, new WeiboSpout(), 1);
+        builder.setBolt(counterId, new RollingCountBolt(600, 60), 4).fieldsGrouping(spoutId, new Fields("weibo"));
         builder.setBolt(intermediateRankerId, new IntermediateRankingsBolt(TOP_N), 4).fieldsGrouping(counterId,
             new Fields("obj"));
         builder.setBolt(totalRankerId, new TotalRankingsBolt(TOP_N)).globalGrouping(intermediateRankerId);
